@@ -74,6 +74,7 @@ public class Parser {
 	            		errosLine.add(line);
 	            	}
 	            }
+	            
 	            br.close();
 	            
 	            Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);

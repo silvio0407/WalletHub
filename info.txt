@@ -38,3 +38,10 @@ having count(ip) > 100;
 
 
 SELECT * FROM LOG_INFORMATIONS WHERE IP = '192.168.169.194';
+
+# 1. java -cp = command <class search path of directories and zip/jar files>
+# 2. proposta.jar = arquivo jar java
+# 3. : = separação class path, caso queira adicionar mais diretórios
+# 4. lib/* = diretório com lib dependente
+# 5. br.com.forseti.main.Carga = main que deve ser executado
+# 6. pageBegin=1 = arguments

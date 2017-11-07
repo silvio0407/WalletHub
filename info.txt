@@ -25,3 +25,16 @@ https://github.com/juliopescuite/wallethub
 # IP 192.000.111.222 foi bloqueado por atingir o limite de requisão permitido 100
 
 # IP 192.000.111.222 was blocked because it reached the allowed request limit 100
+
+SELECT * FROM LOG_INFORMATIONS 
+WHERE DATA_REQUEST >= date_format('2017-01-01 00:00:12', "%y-%m-%d %H:%i:%s") AND DATA_REQUEST <= date_format('2017-01-01 00:00:21', "%y-%m-%d %H:%i:%s") 
+
+
+SELECT COUNT(IP) AS TOTAL_REQUEST , IP AS IP_REQUEST
+ FROM LOG_INFORMATIONS 
+WHERE DATA_REQUEST >= date_format('2017-01-01 00:00:12', "%y-%m-%d %H:%i:%s")
+group by ip
+having count(ip) > 100;
+
+
+SELECT * FROM LOG_INFORMATIONS WHERE IP = '192.168.169.194';

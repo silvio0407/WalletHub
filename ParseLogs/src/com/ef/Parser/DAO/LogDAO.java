@@ -13,14 +13,16 @@ public class LogDAO {
     public LogDAO(){    
         this.connection = ConnectionFactory.getInstance();    
     }    
-    public void salvar(Log log){    
-            String sql = "INSERT INTO log_information(data_request,ip,description_request) VALUES(?,?,?)";    
+    public void salvar(Log log, String messageIpBlocked){    
+            String sql = "INSERT INTO log_informations(data_request,ip,description_request, system_information, comments) VALUES(?,?,?,?,?)";    
             try {    
                 PreparedStatement stmt = connection.getConnection().prepareStatement(sql);    
-                stmt.setString(1, log.getRequestDate());    
+                stmt.setString(1, log.getDateRequest());    
                 stmt.setString(2, log.getIp());    
-                stmt.setString(3, log.getDescriptionRequest());    
-                 stmt.execute();    
+                stmt.setString(3, log.getDescriptionRequest());
+                stmt.setString(4, log.getSystemInformation());
+                stmt.setString(5, messageIpBlocked);
+                stmt.execute();    
                 stmt.close();    
             } catch (SQLException u) {    
                 throw new RuntimeException(u);    

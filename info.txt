@@ -20,3 +20,8 @@ java -cp "Parse.jar" com.ef.parser --startDate=2017-01-01.13:00:00 --duration=ho
 
 
 https://github.com/juliopescuite/wallethub
+
+
+# IP 192.000.111.222 foi bloqueado por atingir o limite de requisão permitido 100
+
+# IP 192.000.111.222 was blocked because it reached the allowed request limit 100

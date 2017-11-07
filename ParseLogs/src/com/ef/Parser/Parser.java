@@ -22,7 +22,7 @@ public class Parser {
 	private static final Integer LINE_VALUE_PARAMETER = 5;
 	private static final Integer OPERATION_THRESHOLD_ONE_HUNDRED = 100;
 	private static final Integer OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY = 250;
-	
+		
 	private static final String ARG_PATH_LOG_FILE = "--accesslog";
 	private static final String ARG_START_DATE = "--startDate";
 	private static final String ARG_DURATION = "--duration";
@@ -52,7 +52,7 @@ public class Parser {
 		if(VALID_DURATION.equals(duration)){
 			try
 	        {
-	            FileReader fr = new FileReader(pathLogFile);/*("c:/Estudo_Java/WalletHub/Test/test.txt");*/
+	            FileReader fr = new FileReader(pathLogFile);
 	            BufferedReader br = new BufferedReader(fr);
 	            String line;
 	            List<Log> logs = new ArrayList<Log>();
@@ -79,14 +79,18 @@ public class Parser {
 	            Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
 	            	
 	            	listGroupingByIp.forEach(entry -> {
-	                    System.out.println("Key : " + entry.getKey() + " Value : " + entry.getValue());
+
+	            		List<Log> list = entry.getValue();
 	                    
-	                    List<Log> itens = entry.getValue();
-	                    
-	                    /*itens.forEach(it -> {
-	                    	new LogDAO().salvar(it);
-	                    });*/
-	                    itens.forEach(it -> System.out.println(it.toString()));
+	            		list.forEach(log -> {
+	            			
+	            			String messageIpBlocked = generateMessageIpBlocked(log.getIp());
+	            			
+	                    	new LogDAO().salvar(log, messageIpBlocked);
+	                    	
+	                    	System.out.println(log.toString());
+	                    });
+	                    //itens.forEach(it -> System.out.println(it.toString()));
 	                    
 	                }); 
 	            		
@@ -97,7 +101,7 @@ public class Parser {
 	        }
 	        catch (FileNotFoundException e)
 	        {
-	            System.out.println("File not found!");
+	        	LOGGER.info("File not found!");
 	        }
 	        catch (IOException e)
 	        {
@@ -153,5 +157,18 @@ public class Parser {
 			numberRegister = OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY;
 			requestEndTime = startDate.plusDays(1l);
 		}
+	}
+	
+	private static String generateMessageIpBlocked(String ip){
+		
+		StringBuilder msg = new StringBuilder();
+		msg.append("IP ");
+		msg.append(ip);
+		msg.append(" was blocked because it reached the allowed request limit ");
+		msg.append(duration);
+		msg.append(" greater than ");
+		msg.append(numberRegister);
+		
+		return msg.toString();
 	}
 }

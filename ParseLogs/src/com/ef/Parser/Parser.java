@@ -12,9 +12,12 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.ef.Parser.DAO.LogDAO;
 import com.ef.Parser.entity.Log;
 import com.ef.Parser.util.ParserUtils;
+import com.efe.enumeration.SituationDurationEnum;
 
 public class Parser {
 	private static Logger LOGGER = Logger.getLogger(Parser.class.toString());
@@ -27,9 +30,10 @@ public class Parser {
 	private static final String ARG_START_DATE = "--startDate";
 	private static final String ARG_DURATION = "--duration";
 	private static final String ARG_THRESHOLD = "--threshold";
-	private static final String VALID_DURATION = "hourly";	
 	private static final String DELIMETER_EQUAL = "=";
 	private static final String DELIMETER_DOTE = ".";
+	
+	private static final String[] DURATION_VALID = {SituationDurationEnum.DAILY.getDescription(), SituationDurationEnum.HOURLY.getDescription()};
 	
 	private static LocalDateTime requestEndTime = null;
 	private static LocalDateTime startDate = null;
@@ -49,7 +53,7 @@ public class Parser {
 		
 		preperInformationForProcessLogFile(args);
 		
-		if(VALID_DURATION.equals(duration)){
+		if(ArrayUtils.contains(DURATION_VALID,duration)){
 			try
 	        {
 	            FileReader fr = new FileReader(pathLogFile);
@@ -107,9 +111,11 @@ public class Parser {
 	        catch (IOException e)
 	        {
 	            e.printStackTrace();
-	        }
+	        }catch (Exception ex) {
+	        	LOGGER.severe("Inconsistent Data, please verify the parameters informated.");
+			}
 		}else{
-			LOGGER.info("Please, verify the information for argument --duration, the only valid argument is hourly, but was informated:  " + duration);
+			LOGGER.info("Please, verify the information for argument --duration, the only valid arguments are hourly or daily, but was informated:  " + duration);
 		}
 	}
 	
@@ -151,12 +157,14 @@ public class Parser {
 			}
 		}
 		
-		if(OPERATION_THRESHOLD_ONE_HUNDRED.intValue() == threshold){
+		if(OPERATION_THRESHOLD_ONE_HUNDRED.intValue() == threshold && SituationDurationEnum.HOURLY.getDescription().equals(duration)){
 			numberRegister = OPERATION_THRESHOLD_ONE_HUNDRED;
 			requestEndTime = startDate.plusHours(1l);
-		}else if (OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY.intValue() == threshold){
+		}else if (OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY.intValue() == threshold && SituationDurationEnum.DAILY.getDescription().equals(duration)){
 			numberRegister = OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY;
 			requestEndTime = startDate.plusDays(1l);
+		}else{
+			
 		}
 	}
 	

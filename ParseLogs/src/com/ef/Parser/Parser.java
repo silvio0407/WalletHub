@@ -16,8 +16,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import com.ef.Parser.DAO.LogDAO;
 import com.ef.Parser.entity.Log;
+import com.ef.Parser.enumeration.SituationDurationEnum;
 import com.ef.Parser.util.ParserUtils;
-import com.efe.enumeration.SituationDurationEnum;
 
 public class Parser {
 	private static Logger LOGGER = Logger.getLogger(Parser.class.toString());

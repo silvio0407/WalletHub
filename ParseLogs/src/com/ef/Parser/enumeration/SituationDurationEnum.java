@@ -1,4 +1,4 @@
-package com.efe.enumeration;
+package com.ef.Parser.enumeration;
 
 public enum SituationDurationEnum {
 

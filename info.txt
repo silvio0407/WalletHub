@@ -1,0 +1,22 @@
+System.out.println(result2);
+	            	
+	            	Map<String, List<Log>> result = logs.stream().collect(Collectors.groupingBy(Log::getIp));
+	            	
+	            	System.out.println(result);
+	            	
+	            	Map<String, Long> agrupadoPorIP =
+	            		    logs.stream()
+	            		            .collect(Collectors.groupingBy(Log::getIp, Collectors.counting()));
+
+	            		System.out.println(agrupadoPorIP);
+	            		
+	            		Set<String> ipsAcessoMaiorQue100 = agrupadoPorIP.entrySet().stream().filter(e -> e.getValue() > 100)
+	            				.map(Map.Entry::getKey).collect(Collectors.toSet());
+
+	            		System.out.println(ipsAcessoMaiorQue100);
+
+
+java -cp "Parse.jar" com.ef.parser --startDate=2017-01-01.13:00:00 --duration=hourly --threshold=100
+
+
+https://github.com/juliopescuite/wallethub

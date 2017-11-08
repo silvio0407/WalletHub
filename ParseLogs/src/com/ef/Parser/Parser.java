@@ -121,7 +121,6 @@ public class Parser {
         Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
      	listGroupingByIp.forEach(entry -> {
      		List<Log> list = entry.getValue();
-            System.out.println("-------Total de Registro: " + list.size()); 
      		list.forEach(log -> {
      			
      			String messageIpBlocked = generateMessageIpBlocked(log.getIp());

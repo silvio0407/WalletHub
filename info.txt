@@ -45,3 +45,15 @@ SELECT * FROM LOG_INFORMATIONS WHERE IP = '192.168.169.194';
 # 4. lib/* = diretório com lib dependente
 # 5. br.com.forseti.main.Carga = main que deve ser executado
 # 6. pageBegin=1 = arguments
+
+
+----------Manifest exemplo
+
+Manifest-Version: 1.0
+Main-Class: com.ef.Parser.Parser
+Class-Path: commons-lang3-3.4.jar mysql-connector-java-5.0.8-bin.jar
+
+
+------------------
+
+java -jar parser.jar --accesslog=c:/Silvio/access.log --startDate=2017-01-01.13:00:00 --duration=daily --threshold=300

@@ -19,7 +19,7 @@ public class LogDAO {
         this.connection = ConnectionFactory.getInstance();    
     }    
     public void salvar(Log log, String messageIpBlocked){    
-            String sql = "INSERT INTO log_informations(data_request,ip,description_request, system_information, comments) VALUES(?,?,?,?,?)";    
+            String sql = "INSERT INTO log_informations(date_request,ip,description_request, system_information, comments) VALUES(?,?,?,?,?)";    
             try {    
                 PreparedStatement stmt = connection.getConnection().prepareStatement(sql);    
                 stmt.setString(1, log.getDateRequest());    

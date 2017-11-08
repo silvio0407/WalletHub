@@ -119,6 +119,7 @@ public class Parser {
          br.close();
          
         Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
+        
      	listGroupingByIp.forEach(entry -> {
      		List<Log> list = entry.getValue();
      		list.forEach(log -> {

@@ -1,9 +1,14 @@
 package com.ef.Parser.enumeration;
 
+/**
+ * 
+ * @author Silvio
+ *
+ */
 public enum SituationDurationEnum {
 
-	HOURLY(100, "hourly"),
-	DAILY(250, "daily");
+	HOURLY(1, "hourly"),
+	DAILY(2, "daily");
 	
 	private Integer id;
 

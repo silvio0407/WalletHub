@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import com.ef.Parser.database.ConnectionFactory;
 import com.ef.Parser.entity.Log;
 
+/**
+ * 
+ * @author Silvio
+ *
+ */
 public class LogDAO {
 
 	private ConnectionFactory connection;

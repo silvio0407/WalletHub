@@ -1,5 +1,10 @@
 package com.ef.Parser.entity;
 
+/**
+ * 
+ * @author Silvio
+ *
+ */
 public class Log {
 
 	private String dateRequest;
@@ -8,8 +13,7 @@ public class Log {
 	private Long duration;
 	private String systemInformation;
 	
-	public Log(String startDate, String ip, String descriptionRequest, Long duration,
-			String systemInformation) {
+	public Log(String startDate, String ip, String descriptionRequest, Long duration, String systemInformation) {
 		this.dateRequest = startDate;
 		this.duration = duration;
 		this.ip = ip;

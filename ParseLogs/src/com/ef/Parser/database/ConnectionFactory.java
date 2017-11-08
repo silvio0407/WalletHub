@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * 
+ * @author Silvio
+ *
+ */
 public class ConnectionFactory {
 
 	 private static Connection connection;
@@ -12,11 +17,6 @@ public class ConnectionFactory {
 	    private static String user = "root";
 	    private static String pass = "root";
 	 	private static String driver = "com.mysql.jdbc.Driver";
-	 
-	 	//private static String jdbcUrl = "jdbc:postgresql://localhost:5432/hibernate";
-	 	//private static String user = "postgres";
-	 	//private static String pass = "postgres";
-	 	//private static String driver = "org.postgresql.Driver";
 	 	
 	 	private static ConnectionFactory instance;
 
@@ -28,10 +28,9 @@ public class ConnectionFactory {
             }
 	 		 try {
 	                connection = DriverManager.getConnection(jdbcUrl, user, pass);
-	            } catch (SQLException ex) {
-	                System.out.println("Houve um erro ao conectar com o Banco de Dados.");
-	            } 
-	 		
+            } catch (SQLException ex) {
+                System.out.println("Houve um erro ao conectar com o Banco de Dados.");
+            } 
 	 	}
 	 	
 	    public static ConnectionFactory getInstance() {

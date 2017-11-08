@@ -19,12 +19,15 @@ import com.ef.Parser.entity.Log;
 import com.ef.Parser.enumeration.SituationDurationEnum;
 import com.ef.Parser.util.ParserUtils;
 
+/**
+ * 
+ * @author Silvio
+ * The class is responsilble to read log file, loads the log to MySQL and checks if a given IP makes more than a certain number of requests for the given duration
+ */
 public class Parser {
 	private static Logger LOGGER = Logger.getLogger(Parser.class.toString());
 	
 	private static final Integer LINE_VALUE_PARAMETER = 5;
-	private static final Integer OPERATION_THRESHOLD_ONE_HUNDRED = 100;
-	private static final Integer OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY = 250;
 		
 	private static final String ARG_PATH_LOG_FILE = "--accesslog";
 	private static final String ARG_START_DATE = "--startDate";
@@ -44,19 +47,27 @@ public class Parser {
 	
 	private static List<String> errosLine = new ArrayList<String>();
 	
+	
+	/***
+	 * Main method.
+	 * 
+	 * @param args
+	 *            - Program arguments.
+	 */
 	public static void main(String[] args) {
-		
 		if(args.length != 4){
 			LOGGER.info("Invalid number of arguments, expected 4 but currently is " + args.length);
 			System.exit(0);
 		}
 		
-		preperInformationForProcessLogFile(args);
+		prepareInformationForProcessLogFile(args);
 		
 		if(ArrayUtils.contains(DURATION_VALID,duration)){
 			try
 	        {
+				LOGGER.info("---- Starting file read.... ");
 				processLogFile();
+				LOGGER.info("---- Process finished!!");
 	        }
 	        catch (FileNotFoundException e)
 	        {
@@ -73,8 +84,15 @@ public class Parser {
 		}
 	}
 	
+	
+	/***
+	 * processLogFile method.
+	 * 
+	 * Read file log and checks if a given IP made more than a certain number of requests for the given duration and save into MySQL database.
+	 * 
+	 * @exception IOException
+	 */
 	private static void processLogFile() throws IOException{
-		
 		 FileReader fr = new FileReader(pathLogFile);
          BufferedReader br = new BufferedReader(fr);
          String line;
@@ -100,84 +118,85 @@ public class Parser {
          
          br.close();
          
-         Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
-         	
-         	listGroupingByIp.forEach(entry -> {
-
-         		List<Log> list = entry.getValue();
-                 
-         		list.forEach(log -> {
-         			
-         			String messageIpBlocked = generateMessageIpBlocked(log.getIp());
-         			
-                 	new LogDAO().salvar(log, messageIpBlocked);
-                 	
-                 	System.out.println(log.toString());
-                 });
-                 //itens.forEach(it -> System.out.println(it.toString()));
-                 
-             }); 
+        Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
+     	listGroupingByIp.forEach(entry -> {
+     		List<Log> list = entry.getValue();
+            System.out.println("-------Total de Registro: " + list.size()); 
+     		list.forEach(log -> {
+     			
+     			String messageIpBlocked = generateMessageIpBlocked(log.getIp());
+     			
+             	new LogDAO().salvar(log, messageIpBlocked);
+             	
+             	System.out.println("\nDetail: " + log.toString());
+             });
+         }); 
 	}
 	
+	/***
+	 * groupLogInformations method.
+	 * 
+	 * Groups the IPs according threshold.
+	 * 
+	 * @param logs
+	 * 
+	 * @return listGroupingByIp
+	 */
 	private static Stream<Map.Entry<String,List<Log>>> groupLogInformations(List<Log> logs){
-		
-		Stream<Map.Entry<String,List<Log>>> listGroupingByIp = logs.stream().collect(Collectors.groupingBy(Log::getIp)).entrySet().stream().filter(e -> e.getValue().size() > numberRegister);
+		Stream<Map.Entry<String,List<Log>>> listGroupingByIp = logs.stream().collect(Collectors.groupingBy(Log::getIp)).entrySet().stream().filter(e -> e.getValue().size() >= threshold);
 		
 		return listGroupingByIp;
 	}
 	
-	private static void preperInformationForProcessLogFile(String[] args){
-		
+	/**
+	 * prepareInformationForProcessLogFile method.
+	 * 
+	 * Prepare the informations before start the process the file.
+	 * 
+	 * @param args
+	 */
+	private static void prepareInformationForProcessLogFile(String[] args){
 		for (String arg : args) {
-			
+
 			String[] infoArgs = arg.split(DELIMETER_EQUAL);
 			
 			boolean isValid = ParserUtils.isValidArgument(infoArgs);
 			
 			if (isValid && infoArgs[0].equals(ARG_PATH_LOG_FILE)) {
-				
 				pathLogFile = infoArgs[1];
-				
 			}else if (isValid && infoArgs[0].equals(ARG_START_DATE)) {
-				
 				startDate = ParserUtils.formatDate(infoArgs[1].replace(DELIMETER_DOTE, " "));
-				
-				System.out.println("startDate : " + startDate);
-				
 			}else if (isValid && infoArgs[0].equals(ARG_DURATION)) {
-				
 				duration = infoArgs[1];
-				
-				System.out.println("duration : " + duration);
-				
 			}else if (isValid && infoArgs[0].equals(ARG_THRESHOLD)) {
-				
 				threshold = Integer.parseInt(infoArgs[1]);
-				System.out.println("threshold : " + threshold);
 			}
 		}
 		
-		if(OPERATION_THRESHOLD_ONE_HUNDRED.intValue() == threshold && SituationDurationEnum.HOURLY.getDescription().equals(duration)){
-			numberRegister = OPERATION_THRESHOLD_ONE_HUNDRED;
+		if(SituationDurationEnum.HOURLY.getDescription().equals(duration)){
 			requestEndTime = startDate.plusHours(1l);
-		}else if (OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY.intValue() == threshold && SituationDurationEnum.DAILY.getDescription().equals(duration)){
-			numberRegister = OPERATION_THRESHOLD_TWO_HUNDRED_AND_FIFTY;
+		}else if (SituationDurationEnum.DAILY.getDescription().equals(duration)){
 			requestEndTime = startDate.plusDays(1l);
-		}else{
-			
 		}
 	}
 	
+	/**
+	 * generateMessageIpBlocked method.
+	 * 
+	 * Generate the message that contain the reason of IP has been blocked.
+	 * 
+	 * @param ip
+	 * @return messageIpBlocled
+	 */
 	private static String generateMessageIpBlocked(String ip){
+		StringBuilder messageIpBlocled = new StringBuilder();
+		messageIpBlocled.append("IP ");
+		messageIpBlocled.append(ip);
+		messageIpBlocled.append(" was blocked because it reached the allowed request limit ");
+		messageIpBlocled.append(duration);
+		messageIpBlocled.append(" greater than ");
+		messageIpBlocled.append(numberRegister);
 		
-		StringBuilder msg = new StringBuilder();
-		msg.append("IP ");
-		msg.append(ip);
-		msg.append(" was blocked because it reached the allowed request limit ");
-		msg.append(duration);
-		msg.append(" greater than ");
-		msg.append(numberRegister);
-		
-		return msg.toString();
+		return messageIpBlocled.toString();
 	}
 }

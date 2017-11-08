@@ -189,14 +189,14 @@ public class Parser {
 	 * @return messageIpBlocled
 	 */
 	private static String generateMessageIpBlocked(String ip){
-		StringBuilder messageIpBlocled = new StringBuilder();
-		messageIpBlocled.append("IP ");
-		messageIpBlocled.append(ip);
-		messageIpBlocled.append(" was blocked because it reached the allowed request limit ");
-		messageIpBlocled.append(duration);
-		messageIpBlocled.append(" greater than ");
-		messageIpBlocled.append(numberRegister);
+		StringBuilder messageIpBlocked = new StringBuilder();
+		messageIpBlocked.append("IP ");
+		messageIpBlocked.append(ip);
+		messageIpBlocked.append(" was blocked because it reached the allowed request limit ");
+		messageIpBlocked.append(duration);
+		messageIpBlocked.append(" greater than ");
+		messageIpBlocked.append(numberRegister);
 		
-		return messageIpBlocled.toString();
+		return messageIpBlocked.toString();
 	}
 }

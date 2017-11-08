@@ -56,53 +56,7 @@ public class Parser {
 		if(ArrayUtils.contains(DURATION_VALID,duration)){
 			try
 	        {
-	            FileReader fr = new FileReader(pathLogFile);
-	            BufferedReader br = new BufferedReader(fr);
-	            String line;
-	            List<Log> logs = new ArrayList<Log>();
-	            while ((line = br.readLine()) != null)
-	            {
-	            	String[] logInformations = line.split("\\|");
-	            	
-	            	if(logInformations.length == LINE_VALUE_PARAMETER)
-	            	{
-	        			String logDate =  logInformations[0];
-	        			
-	        			LocalDateTime logDateRequestAccess = ParserUtils.formatDate(logDate);
-	        			
-	        			if((logDateRequestAccess.isEqual(startDate) || logDateRequestAccess.isAfter(startDate)) &&  (logDateRequestAccess.isEqual(requestEndTime) || logDateRequestAccess.isBefore(requestEndTime))){
-	        				 Log log = new Log(logInformations[0], logInformations[1],logInformations[2], Long.valueOf(logInformations[3]),logInformations[4]);
-	 	                    logs.add(log);
-	        			}
-	            	}else{
-	            		errosLine.add(line);
-	            	}
-	            }
-	            
-	            br.close();
-	            
-	            Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
-	            	
-	            	listGroupingByIp.forEach(entry -> {
-
-	            		List<Log> list = entry.getValue();
-	                    
-	            		list.forEach(log -> {
-	            			
-	            			String messageIpBlocked = generateMessageIpBlocked(log.getIp());
-	            			
-	                    	new LogDAO().salvar(log, messageIpBlocked);
-	                    	
-	                    	System.out.println(log.toString());
-	                    });
-	                    //itens.forEach(it -> System.out.println(it.toString()));
-	                    
-	                }); 
-	            		
-	            /*}else{
-	            	System.out.println("Não foi encontrado mais que 100 acessos");
-	            }*/
-	            
+				processLogFile();
 	        }
 	        catch (FileNotFoundException e)
 	        {
@@ -117,6 +71,52 @@ public class Parser {
 		}else{
 			LOGGER.info("Please, verify the information for argument --duration, the only valid arguments are hourly or daily, but was informated:  " + duration);
 		}
+	}
+	
+	private static void processLogFile() throws IOException{
+		
+		 FileReader fr = new FileReader(pathLogFile);
+         BufferedReader br = new BufferedReader(fr);
+         String line;
+         List<Log> logs = new ArrayList<Log>();
+         while ((line = br.readLine()) != null)
+         {
+         	String[] logInformations = line.split("\\|");
+         	
+         	if(logInformations.length == LINE_VALUE_PARAMETER)
+         	{
+     			String logDate =  logInformations[0];
+     			
+     			LocalDateTime logDateRequestAccess = ParserUtils.formatDate(logDate);
+     			
+     			if((logDateRequestAccess.isEqual(startDate) || logDateRequestAccess.isAfter(startDate)) &&  (logDateRequestAccess.isEqual(requestEndTime) || logDateRequestAccess.isBefore(requestEndTime))){
+     				 Log log = new Log(logInformations[0], logInformations[1],logInformations[2], Long.valueOf(logInformations[3]),logInformations[4]);
+	                    logs.add(log);
+     			}
+         	}else{
+         		errosLine.add(line);
+         	}
+         }
+         
+         br.close();
+         
+         Stream<Map.Entry<String,List<Log>>> listGroupingByIp = groupLogInformations(logs);
+         	
+         	listGroupingByIp.forEach(entry -> {
+
+         		List<Log> list = entry.getValue();
+                 
+         		list.forEach(log -> {
+         			
+         			String messageIpBlocked = generateMessageIpBlocked(log.getIp());
+         			
+                 	new LogDAO().salvar(log, messageIpBlocked);
+                 	
+                 	System.out.println(log.toString());
+                 });
+                 //itens.forEach(it -> System.out.println(it.toString()));
+                 
+             }); 
 	}
 	
 	private static Stream<Map.Entry<String,List<Log>>> groupLogInformations(List<Log> logs){
